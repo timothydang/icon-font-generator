@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title><%= fontBaseName %></title>
+		<style>
+			body {
+				margin:0;
+				padding:10px 20px;
+				background:#fff;
+				color:#222;
+				font-family:"Helvetica Neue", Arial, sans-serif;
+				font-size: 16px;
+			}
+
+			.icons {
+				margin-bottom: 15px;
+			}
+
+			.icons__item {
+				margin-bottom: 5px;
+			}
+
+			.icons-large {
+				font-size: 70px;
+			}
+
+			.glyph-description {
+				font-size: 16px;
+			}
+
+			<%= styles %>
+		</style>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script type="text/javascript">
+		    var listCssRules = function() {
+		        return $.map(document.styleSheets, function(styleSheet) {
+		            return $.makeArray(styleSheet.cssRules);
+		        });
+		    };
+
+		    var listCssClasses = function() {
+		        var cssClasses = $.map(listCssRules(), function(cssRule) {
+		           return cssRule.selectorText;
+		        });
+		        return cssClasses.sort();
+		    };
+
+		    var listFontIcons = function() {
+		        var fontIconsCssClasses = $.grep(listCssClasses(), function (cssClass) {
+		            return cssClass.match(/^\.icon\-/) &&
+		                cssClass.match(/\:before$/);
+		        });
+
+		        return $.map(fontIconsCssClasses, function(cssClass) {
+		            return cssClass
+		                    .replace(/^\./, '')
+		                    .replace(/\:before$/, '')
+		                    .replace(/\:/, '');
+		        });
+		    };
+
+		    var fontIconsWithFills = function() {
+		    	return $.grep(listFontIcons(), function(cssClass) {
+		    		return cssClass.indexOf("-fill") != -1;
+		    	});
+		    };
+
+		    var fontIconsWithRingHighlight = function() {
+		    	return $.grep(listFontIcons(), function(cssClass) {
+		    		return cssClass.indexOf("-fill") == -1;
+		    	});
+		    };
+		</script>
+		<style type="text/css">
+			.float-left {
+				float: left;
+				margin-right: 20px;
+			}
+			.hidden {
+				display: none;
+			}
+			.clearfix {
+				clear: both;
+			}
+		</style>
+	</head>
+	<body>		
+		<div class="icons">
+			<h1><%= fontBaseName %></h1>
+			<% for (var glyphIdx = 0; glyphIdx < glyphs.length; glyphIdx++) { var glyph = glyphs[glyphIdx] %>
+				<div class="icons__item" data-name="<%= glyph %>"><i class="<%= baseClass %> <%= classPrefix %><%= glyph %>"></i> <span class="glyph-description"><%= classPrefix %><%= glyph %></span></div>
+			<% } %>
+		</div>		
+		<div>
+			<h1>Large Font</h1>
+			<% for (var glyphIdx = 0; glyphIdx < glyphs.length; glyphIdx++) { var glyph = glyphs[glyphIdx] %>
+				<div class="icons__item icons-large" data-name="<%= glyph %>"><i class="<%= baseClass %> <%= classPrefix %><%= glyph %>"></i> <div class="glyph-description"><%= classPrefix %><%= glyph %></div></div>
+			<% } %>
+		</div>
+		
+		<div class="ring-highlight-test-container">
+			<h1>Ring Highlight</h1>
+			<% 
+				for (var glyphIdx = 0; glyphIdx < glyphs.length; glyphIdx++) {
+					var glyph = glyphs[glyphIdx];
+
+					if (glyph.indexOf('fill') == -1)  {
+			%>
+				<div class="icons-large">
+					<span class="stacked-icons ring-highlight">
+						<span class="stacked-icons-centering">
+							<span class="stacked-icon stacked-icon-background <%= baseClass %> <%= classPrefix %><%= glyph %>"></span>
+							<span class="stacked-icon stacked-icon-foreground <%= baseClass %> <%= classPrefix %>elipse"></span>
+						</span>
+					</span>
+					<span class="glyph-description"><%= classPrefix %><%= glyph %></span>
+				</div>
+
+			<% 
+					}
+				}
+			%>
+		</div>
+
+		<div class="fill-test-container">
+			<h1>Icons with Filled Colours</h1>
+			<% 
+				for (var glyphIdx = 0; glyphIdx < glyphs.length; glyphIdx++) {
+					var glyph = glyphs[glyphIdx];
+
+					if (glyph.indexOf('fill') != -1)  {
+			%>
+					<div class="icons-large">
+						<span class="stacked-icons">
+							<span class="stacked-icons-centering">
+								<span class="stacked-icon-background icon <%= baseClass %> <%= classPrefix %><%= glyph %>"></span>
+								<span class="stacked-icon-foreground icon <%= baseClass %> <%= classPrefix %><%= glyph.replace(/\-fill/, '') %>"></span>
+							</span>
+						</span>
+						<span class="glyph-description"><%= classPrefix %><%= glyph.replace(/\-fill/, '') %></span>
+					</div>
+			<% 
+					}
+				}
+			%>			
+		</div>
+
+		
+
+		<h1 class="clearfix">Usage</h1>
+		<pre><code>&lt;i class=&quot;<%= baseClass ? baseClass + ' ' : '' %><%= classPrefix %><span id="name">name</span>&quot;&gt;&lt;/i&gt;</code></pre>
+	</body>
+</html>

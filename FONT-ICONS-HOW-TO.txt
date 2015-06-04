@@ -1,0 +1,123 @@
+IMPORTANT: Read this document if you are creating new font icons or planning to modify an existing one.
+
+Yes, you have to read this if you are working with the EPS or SVG files. Here's an ascii art to make you feel better (thanks to Jonathan and Tim):
+
+       .----------.
+      /  .-.  .-.  \
+     /   | |  | |   \
+     \   `-'  `-'  _/
+     /\     .--.  / |
+     \ |   /  /  / /
+     / |  `--'  /\ \
+      /`-------'  \ \    
+
+(The Scream, Edward Munch)      
+
+PREAMBLE
+--------
+* We are using Adobe Illustrator CC for font editing.
+* Font icons are generated from one or more SVG files.
+* Each SVG file will be converted into a font.
+* The SVG files are generated out of EPS files
+  * The designer edits the icon images in EPS files
+  * Each EPS file is converted into SVG using 'Save As' functionality of the Adobe Illustrator
+
+WHERE THE EPS AND SVG FILES ARE STORED
+--------------------------------------  
+* The SVG files are stored in src/icons/svgs  
+* The EPS files are stored in src/icons/eps
+
+
+STEPS TO GENERATE FONT ICON
+---------------------------
+
+1. Generate Icon Images in Illustrator
+* Ensure each icons have the same canvas dimension (we are using 300px x 300px).
+* When drawing each icon in the canvas, ensure the icon are horizontally AND vertically centered.
+* IMPORTANT: you must ensure the above 2 steps are being followed exactly - otherwise you will end up with icons with inconsistent sizes and centering.
+* Convert the icon into compound path
+  * This is done by selecting toolbar menu Object -> Compund Path -> Make
+  * The result of this conversion will be the same as how the icon will be displayed as a font
+  * If the icon looks wrong, this means there are paths which are not closed properly - ask your designer's help to fix this, or redo the icon.
+* Save the icon as EPS into src/icons/eps
+  * IMPORTANT: make sure you have "Use Artboard" ticked when you are saving the image
+  * This will ensure the dimensions of the EPS will be remembered when you open the icon next time, as well as when you are saving the SVG image.
+  * Enter these settings on the prompt:
+    * Version: Illustrator CC EPS
+    * Preview Format: TIFF (8-bit Color)
+    * Select Transparent radio button
+    * Tick the following:
+      * Embed Fonts (for other applications)
+      * Include Document Thumbnails
+      * Include CMYK PostScript in RGB Files
+    * Adobe Postscript: LanguageLevel2
+  * Click OK to save
+
+
+2. Generate SVG from the EPS file
+* Open the EPS file of the icon you'd like to convert.
+* Select toolbar menu File -> Save As
+* Navigate to src/icons/svg directory
+* Change file type to SVG (*.SVG)
+* IMPORTANT: make sure you have "Use Artboard" ticked when you are saving the image
+  * This will ensure the SVG saved has the correct coordinate and viewbox settings which are required to render the font correctly.
+* You will be prompted for SVG settings, click on 'More Options' button
+* Enter these settings on the prompt:
+  * SVG Profiles: SVG 1.1
+  * Type: SVG
+  * Subsetting: None (Use System Fonts)
+  * Image Location: Embed
+  * CSS Properties: Presentation Attributes
+  * Decimal Places: 3
+  * Encoding: UTF-8
+  * Tick the following:
+    * Output fewer <tspan> elements
+    * Use <textPath> element for Text on Path
+    * Responsive
+
+3. Re-run the build.sh to regenerate the CSS and icon fonts
+   * Open dist/icons.html to make sure the fonts are displayed correctly.
+   * You can then put the fonts/* into your projects
+
+
+FONT ICONS WITH FILLED COLOUR
+------------------------------
+* The font icons with filled colour are composed from 2 different font icon, stacked atop of each other.
+  * Absolute positioning is used to achieve this
+  * Look for div with class 'fill-test-container' in the templates/html/demo-templates.html
+* The outline is placed on the top.
+* The fill is placed on the bottom.
+* CSS margins are used to position the fill into the right position.
+  * The em units are being used to allow the fill to be positioned correctly regardless of the font size
+  * CSS is required to position the fill icon as when the fill icon is generated it will be horizontally and vertically centered.
+
+
+TROUBLESHOOTING
+---------------
+* My icon are not respecting the CSS baseline!
+  * This is mostly caused by incorrect viewbox settings on the SVG.
+  * How to detect:
+    * Open the corresponding SVG file using a text editor.
+    * Look at the viewbox attribute - it should start at 0 0, e.g. viewBox="0 0 ...
+  * How to fix:
+    * Unfortunately, you must fix this from the EPS file.
+    * Open the corresponding EPS file using Adobe Illustrator.
+    * Select all paths - Ctrl+A (or Command+A in Apple)
+    * Copy them - Ctrl+C (or Command+C)
+    * Create a new document with the correct dimension (300px x 300px)
+    * Paste the path - Ctrl+V (or Command+V)
+    * Save the document as EPS with the settings described in Step 1, replacing the original EPS file.
+    * Regenerate the SVG file, and rebuild the fonts
+
+* My icon looks all black - what's going on!
+  * This is mostly caused by unclosed paths in the EPS.
+  * How to detect:
+    * Open the corresponding EPS file using illustrator.
+    * Convert to Compound Path
+      * This is done by selecting toolbar menu Object -> Compund Path -> Make
+    * You should see the icons are now all filled with black colour as well.
+  * How to fix:
+    * You can't fix this yourself unfortunately - get a designer's help
+    * Either you find a path which is not closed
+    * Or re-create the icon from scratch.
+
